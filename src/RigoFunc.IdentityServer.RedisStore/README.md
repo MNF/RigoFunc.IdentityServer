@@ -1,2 +1,0 @@
-﻿
-# [ChangeLog](./CHANGELOG.md)
