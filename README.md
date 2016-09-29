@@ -7,6 +7,10 @@ The change is we add `CODE` login sent to `Phone Number`.
 
 [![Join the chat at https://gitter.im/xyting/RigoFunc.IdentityServer](https://badges.gitter.im/xyting/RigoFunc.IdentityServer.svg)](https://gitter.im/xyting/RigoFunc.IdentityServer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+# Announcement
+- RigoFunc.IdentityServer.Services.EntityFrameworkCore move to https://github.com/lovedotnet/RigoFunc.IdentityServer.Services.EntityFrameworkCore
+- RigoFunc.IdentityServer.RedisStore move to https://github.com/lovedotnet/RigoFunc.IdentityServer.RedisStore
+
 # Wiki
 https://github.com/xyting/RigoFunc.IdentityServer/wiki
 

@@ -7,8 +7,7 @@
   "dependencies": {
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "NETStandard.Library": "1.6.0",
-    "RigoFunc.IdentityServer": "1.0.0-*",
-    "RigoFunc.IdentityServer.RedisStore": "*",
+    "RigoFunc.IdentityServer": "1.1.0-rc1-*",
     "xunit": "2.2.0-beta2-build3300"
   },
 
