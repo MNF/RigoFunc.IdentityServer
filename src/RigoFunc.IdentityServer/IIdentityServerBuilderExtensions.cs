@@ -1,46 +1,50 @@
 ﻿using IdentityModel;
-using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
-using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+using RigoFunc.IdentityServer;
 
-namespace RigoFunc.IdentityServer {
+namespace Microsoft.Extensions.DependencyInjection {
     /// <summary>
     /// Contains extension methods to <see cref="IIdentityServerBuilder"/> for configuring identity server.
     /// </summary>
     public static class IIdentityServerBuilderExtensions {
         /// <summary>
-        /// Configures the Asp.Net Core Identity.
+        /// Adds the Asp.Net core identity.
         /// </summary>
-        /// <typeparam name="TUser">The type of the user.</typeparam>
+        /// <typeparam name="TUser">The type of the t user.</typeparam>
         /// <param name="builder">The builder.</param>
         /// <returns>IIdentityServerBuilder.</returns>
-        public static IIdentityServerBuilder ConfigureAspNetCoreIdentity<TUser>(this IIdentityServerBuilder builder)
+        public static IIdentityServerBuilder AddAspNetCoreIdentity<TUser>(this IIdentityServerBuilder builder)
             where TUser : class {
-            var services = builder.Services;
+            return builder.AddAspNetCoreIdentity<TUser>("idsvr");
+        }
 
-            services.AddScoped<SignInManager<TUser>, IdentityServerSignInManager<TUser>>();
-            services.AddTransient<IProfileService, IdentityProfileService<TUser>>();
-            services.AddTransient<IResourceOwnerPasswordValidator, IdentityResourceOwnerPasswordValidator<TUser>>();
+        /// <summary>
+        /// Adds the Asp.Net core identity.
+        /// </summary>
+        /// <typeparam name="TUser">The type of the t user.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <param name="authenticationScheme">The authentication scheme.</param>
+        /// <returns>IIdentityServerBuilder.</returns>
+        public static IIdentityServerBuilder AddAspNetCoreIdentity<TUser>(this IIdentityServerBuilder builder, string authenticationScheme)
+            where TUser : class {
+            builder.Services.Configure<IdentityServerOptions>(options => {
+                options.AuthenticationOptions.AuthenticationScheme = authenticationScheme;
+            });
 
-            services.Configure<IdentityOptions>(options => {
-                options.Cookies.ApplicationCookie.AuthenticationScheme = Constants.DefaultCookieAuthenticationScheme;
-                options.Cookies.ApplicationCookie.LoginPath = new PathString("/ui/login");
-                options.Cookies.ApplicationCookie.LogoutPath = new PathString("/ui/logout");
-
+            builder.Services.Configure<IdentityOptions>(options => {
+                options.Cookies.ApplicationCookie.AuthenticationScheme = authenticationScheme;
                 options.ClaimsIdentity.UserIdClaimType = JwtClaimTypes.Subject;
                 options.ClaimsIdentity.UserNameClaimType = JwtClaimTypes.Name;
                 options.ClaimsIdentity.RoleClaimType = JwtClaimTypes.Role;
             });
 
-            services.Configure<IdentityServerOptions>(
-               options => {
-                   options.AuthenticationOptions.AuthenticationScheme = Constants.DefaultCookieAuthenticationScheme;
-               });
+            builder.AddResourceOwnerValidator<IdentityResourceOwnerPasswordValidator<TUser>>();
+            builder.Services.AddTransient<IProfileService, IdentityProfileService<TUser>>();
+
+            builder.Services.AddTransient<ISecurityStampValidator, RigoFunc.IdentityServer.SecurityStampValidator<TUser>>();
 
             return builder;
         }

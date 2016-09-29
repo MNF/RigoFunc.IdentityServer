@@ -16,12 +16,16 @@
   },
   "buildOptions": {
     "optimize": true,
-    "xmlDoc": true
+    "xmlDoc": true,
+    "warningsAsErrors": true,
+    "nowarn": [
+      "CS1591"
+    ]
   },
   "dependencies": {
     "NETStandard.Library": "1.6.0",
     "Microsoft.AspNetCore.Identity": "1.0.0",
-    "IdentityServer4": "1.0.0-beta5"
+    "IdentityServer4": "1.0.0-rc1-*"
   },
 
   "frameworks": {
