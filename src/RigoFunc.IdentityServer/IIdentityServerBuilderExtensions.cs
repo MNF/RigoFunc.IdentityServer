@@ -1,6 +1,6 @@
 ﻿using IdentityModel;
 using IdentityServer4.Configuration;
-using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using RigoFunc.IdentityServer;
@@ -45,6 +45,12 @@ namespace Microsoft.Extensions.DependencyInjection {
             builder.AddProfileService<IdentityProfileService<TUser>>();
 
             builder.Services.AddTransient<ISecurityStampValidator, RigoFunc.IdentityServer.SecurityStampValidator<TUser>>();
+
+            return builder;
+        }
+
+        public static IIdentityServerBuilder AddDistributedPersistedGrantStore(this IIdentityServerBuilder builder) {
+            builder.Services.AddSingleton<IPersistedGrantStore, DistributedPersistedGrantStore>();
 
             return builder;
         }

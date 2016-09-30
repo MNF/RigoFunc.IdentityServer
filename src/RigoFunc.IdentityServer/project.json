@@ -24,12 +24,12 @@
   },
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "Microsoft.AspNetCore.Identity": "1.0.0",
+    "Microsoft.AspNetCore.Identity": "1.0.*",
     "IdentityServer4": "1.0.0-rc1-*"
   },
 
   "frameworks": {
-    "netstandard1.5": {
+    "netstandard1.6": {
     }
   }
 }
