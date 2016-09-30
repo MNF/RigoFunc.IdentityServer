@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection {
             });
 
             builder.AddResourceOwnerValidator<IdentityResourceOwnerPasswordValidator<TUser>>();
-            builder.Services.AddTransient<IProfileService, IdentityProfileService<TUser>>();
+            builder.AddProfileService<IdentityProfileService<TUser>>();
 
             builder.Services.AddTransient<ISecurityStampValidator, RigoFunc.IdentityServer.SecurityStampValidator<TUser>>();
 
