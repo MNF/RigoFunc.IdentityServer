@@ -12,6 +12,10 @@ The change is we add `CODE` login sent to `Phone Number`.
 - RigoFunc.IdentityServer.Services.EntityFrameworkCore move to https://github.com/lovedotnet/RigoFunc.IdentityServer.Services.EntityFrameworkCore
 - RigoFunc.IdentityServer.RedisStore move to https://github.com/lovedotnet/RigoFunc.IdentityServer.RedisStore
 
+# Breaking Changing
+- RigoFunc.IdentityServer.DistributedStore had been deleted, and the distributed IPersistedGrandStore implementation had been merged into RigoFunc.IdentityServer.
+
+
 # Wiki
 https://github.com/xyting/RigoFunc.IdentityServer/wiki
 
