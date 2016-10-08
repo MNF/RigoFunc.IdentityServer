@@ -25,7 +25,7 @@
   "dependencies": {
     "NETStandard.Library": "1.6.0",
     "Microsoft.AspNetCore.Identity": "1.0.*",
-    "IdentityServer4": "1.0.0-rc1-*"
+    "IdentityServer4": "1.0.0-rc2"
   },
 
   "frameworks": {

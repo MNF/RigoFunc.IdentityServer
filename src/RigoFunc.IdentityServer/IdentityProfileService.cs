@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using IdentityModel;
+﻿using System.Threading.Tasks;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -37,35 +34,7 @@ namespace RigoFunc.IdentityServer {
             var sub = context.Subject.GetSubjectId();
             var user = await _userManager.FindByIdAsync(sub);
             var principal = await _claimsFactory.CreateAsync(user);
-
-            var claims = new List<Claim>(principal.Claims);
-            
-            // Add phone & email
-            if (_userManager.SupportsUserEmail) {
-                var email = await _userManager.GetEmailAsync(user);
-                if (!string.IsNullOrWhiteSpace(email)) {
-                    claims.AddRange(new[]
-                    {
-                        new Claim(JwtClaimTypes.Email, email),
-                        new Claim(JwtClaimTypes.EmailVerified,
-                            await _userManager.IsEmailConfirmedAsync(user) ? "true" : "false", ClaimValueTypes.Boolean)
-                    });
-                }
-            }
-
-            if (_userManager.SupportsUserPhoneNumber) {
-                var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-                if (!string.IsNullOrWhiteSpace(phoneNumber)) {
-                    claims.AddRange(new[]
-                    {
-                        new Claim(JwtClaimTypes.PhoneNumber, phoneNumber),
-                        new Claim(JwtClaimTypes.PhoneNumberVerified,
-                            await _userManager.IsPhoneNumberConfirmedAsync(user) ? "true" : "false", ClaimValueTypes.Boolean)
-                    });
-                }
-            }
-
-            context.AddFilteredClaims(claims);
+            context.AddFilteredClaims(principal.Claims);
         }
 
         /// <summary>

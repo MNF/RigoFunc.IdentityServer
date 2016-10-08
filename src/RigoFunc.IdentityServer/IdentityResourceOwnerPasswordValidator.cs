@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Identity;
 using static IdentityModel.OidcConstants;
@@ -32,7 +33,7 @@ namespace RigoFunc.IdentityServer {
             if (user != null) {
                 if (await _signInManager.CanSignInAsync(user)) {
                     if (_userManager.SupportsUserLockout && await _userManager.IsLockedOutAsync(user)) {
-                        context.Result = new GrantValidationResult(IdentityServer4.Models.TokenErrors.InvalidGrant, $"The user: {context.UserName} is lockout");
+                        context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, $"The user: {context.UserName} is lockout");
                     }
                     else if (await _userManager.CheckPasswordAsync(user, context.Password)) {
                         if (_userManager.SupportsUserLockout) {
