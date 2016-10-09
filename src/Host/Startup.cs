@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Host.Configuration;
-using Host.Cors;
-using Host.EntityFrameworkCore;
-using Host.Extensions;
+using Host.Models.Domains;
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -16,7 +17,8 @@ using Newtonsoft.Json.Serialization;
 using RigoFunc.ApiCore;
 using RigoFunc.ApiCore.Default;
 using RigoFunc.ApiCore.Filters;
-using RigoFunc.IdentityServer;
+using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.EntityFramework;
 
 namespace Host {
     public class Startup {
@@ -37,59 +39,32 @@ namespace Host {
         public IConfigurationRoot Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services) {
-            services.AddDbContext<AppDbContext>(options =>
-               options.UseSqlServer(Configuration["Data:Default:ConnectionString"], b => b.MigrationsAssembly("Host")));
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var connectionString = Configuration["Data:Default:ConnectionString"];
 
-            services.AddIdentity<AppUser, IdentityRole<Guid>>(options => {
+            services.AddDbContext<AppDbContext>(builder =>
+                builder.UseSqlServer(connectionString, options => options.MigrationsAssembly(migrationsAssembly)));
+
+            // Add Asp.Net Core Identity
+            services.AddIdentity<AppUser, IdentityRole<int>>(options => {
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
+                options.Password.RequireUppercase = false;
             })
-            .AddEntityFrameworkStores<AppDbContext, Guid>()
-            .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<AppDbContext, int>()
+            .AddDefaultTokenProviders()
+            .AddUserClaimsPrincipalFactory();
 
-            // Add API invoker services
-            services.AddApiInvoker(options => {
-                options.SendSmsApi = Configuration["ApiUrls:Sms"];
-                options.SendEmailApi = Configuration["ApiUrls:Email"];
-                options.AppPushApi = Configuration["ApiUrls:AppPush"];
-                options.HeaderRetriever = (url) => {
-                    return new[] {
-                        new Tuple<string, string>("xunit", "59d63571-c4c2-4daa-aac6-969f581dc1fa")
-                    };
-                };
-            });
-
-            // Use RigoFunc.Account default account service.
-            services.AddAccountService<AppUser>(options => {
-                options.DefaultClientId = "system";
-                options.DefaultClientSecret = "secret";
-                options.DefaultScope = "doctor consultant finance order payment";
-                options.CodeSmsTemplate = "SMS_1101";
-                options.PasswordSmsTemplate = "SMS_1101";
-            });
-
-            services.AddDistributedSqlServerCache(options => {
-                options.ConnectionString = Configuration["Data:Default:ConnectionString"];
-                options.SchemaName = "dbo";
-                options.TableName = "TokenCache";
-            });
-
+            // Add Identity Server
             var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
-            var builder = services.AddIdentityServer(options => {
-                    options.UserInteractionOptions.LoginUrl = "/ui/login";
-                    options.UserInteractionOptions.LogoutUrl = "/ui/logout";
-                    options.UserInteractionOptions.ConsentUrl = "/ui/consent";
-                    options.UserInteractionOptions.ErrorUrl = "/ui/error";
-                })
+            services.AddIdentityServer()
                 .SetSigningCredential(cert)
-                .AddInMemoryClients(Clients.Get())
-                .AddInMemoryScopes(Scopes.Get())
-                .AddCustomGrantValidator<CustomGrantValidator>()
-                .AddDistributedStores()
-                .ConfigureAspNetCoreIdentity<AppUser>()
-                .AllowCors(options => {
-                    options.AllowAnyOrigin = true;
-                });
+                .AddConfigurationStore(builder =>
+                    builder.UseSqlServer(connectionString, options => options.MigrationsAssembly(migrationsAssembly)))
+                .AddConfigurationStoreCache()
+                .AddOperationalStore(builder =>
+                    builder.UseSqlServer(connectionString, options => options.MigrationsAssembly(migrationsAssembly)))
+                .AddAspNetCoreIdentity<AppUser>();
 
             services.AddScoped<IApiResultHandler, DefaultApiResultHandler>();
             services.AddScoped<IApiExceptionHandler, DefaultApiExceptionHandler>();
@@ -103,26 +78,50 @@ namespace Host {
                 }).AddMvcOptions(options => {
                     options.Filters.Add(typeof(ApiResultFilterAttribute));
                     options.Filters.Add(typeof(ApiExceptionFilterAttribute));
-                })
-                .AddRazorOptions(razor => {
-                    razor.ViewLocationExpanders.Add(new UI.CustomViewLocationExpander());
-                });
+                }).AddApiHelp();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory) {
-            //loggerFactory.AddConsole((scope, level) => scope.StartsWith("IdentityServer"));
-            //loggerFactory.AddDebug((scope, level) => scope.StartsWith("IdentityServer"));
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseDeveloperExceptionPage();
+            // Setup Databases
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope()) {
+                serviceScope.ServiceProvider.GetService<ConfigurationDbContext>().Database.Migrate();
+                serviceScope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.Migrate();
+                EnsureSeedData(serviceScope.ServiceProvider.GetService<ConfigurationDbContext>());
 
-            app.UseStaticFiles();
+                var options = serviceScope.ServiceProvider.GetService<DbContextOptions<PersistedGrantDbContext>>();
+                var tokenCleanup = new TokenCleanup(new TokenCleanupOptions {
+                    DbContextOptions = options,
+                    Interval = 30000,
+                });
+                tokenCleanup.Start();
+            }
 
             app.UseIdentity();
             app.UseIdentityServer();
 
+            app.UseStaticFiles();
+            app.UseApiHelpUI();
+
             app.UseMvcWithDefaultRoute();
+        }
+
+        private static void EnsureSeedData(ConfigurationDbContext context) {
+            if (!context.Clients.Any()) {
+                foreach (var client in Clients.Get()) {
+                    context.Clients.Add(client.ToEntity());
+                }
+                context.SaveChanges();
+            }
+
+            if (!context.Scopes.Any()) {
+                foreach (var client in Scopes.Get()) {
+                    context.Scopes.Add(client.ToEntity());
+                }
+                context.SaveChanges();
+            }
         }
     }
 }

@@ -4,27 +4,34 @@
       "version": "1.0.0",
       "type": "platform"
     },
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
-    "Microsoft.AspNetCore.Mvc": "1.0.0",
-    "Microsoft.Extensions.Logging.Console": "1.0.0",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0",
-    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
-    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
-    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.0",
-    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
-    "Microsoft.Extensions.Caching.SqlServer": "1.0.0",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.*",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.*",
+    "Microsoft.AspNetCore.Mvc": "1.0.*",
+    "Microsoft.Extensions.Logging.Console": "1.0.*",
+    "Microsoft.Extensions.Logging.Debug": "1.0.*",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.*",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.*",
+    "Microsoft.Extensions.Configuration.Json": "1.0.*",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.*",
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.*",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.*",
+    "Microsoft.EntityFrameworkCore.SqlServer.Design": {
+      "version": "1.0.1",
+      "type": "build"
+    },
     "Microsoft.EntityFrameworkCore.Tools": {
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
+    "Love.Net.Help": "1.0.2",
+    "Love.Net.Help.UI": "1.0.3",
     "Love.Net.ApiInvoker": "1.0.0",
-    "RigoFunc.Account": "1.1.0",
-    "RigoFunc.ApiCore": "1.1.9",
-    "RigoFunc.IdentityServer": "1.0.0-*",
-    "RigoFunc.IdentityServer.DistributedStore": "1.0.0-*"
+    "RigoFunc.Account": "1.1.*",
+    "RigoFunc.ApiCore": "1.2.*",
+    "RigoFunc.IdentityServer": {
+      "target": "project"
+    },
+    "IdentityServer4.EntityFramework": "1.0.0-rc2"
   },
 
   "tools": {
@@ -54,7 +61,8 @@
     "include": [
       "wwwroot",
       "appsettings.json",
-      "web.config"
+      "web.config",
+      "**/*.cshtml"
     ]
   },
 

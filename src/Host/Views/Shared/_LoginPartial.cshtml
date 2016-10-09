@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Host.Models.Domains
+
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@if (SignInManager.IsSignedIn(User)) {
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+            <a href="/">Hello @UserManager.GetUserName(User)!</a>
+        </li>
+        <li>
+        <li><a asp-route="Logout">Logout</a></li>
+    </ul>
+}
+else {
+    <ul class="nav navbar-nav navbar-right">
+        <li><a asp-route="Login">Log in</a></li>
+    </ul>
+}
