@@ -28,12 +28,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{BB94CC11-C
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RigoFunc.IdentityServer.IntergrationTests", "test\RigoFunc.IdentityServer.IntergrationTests\RigoFunc.IdentityServer.IntergrationTests.xproj", "{BB138618-E9BB-419D-AD6A-F6955A96A94A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{F4FBA14C-7209-47A4-9E78-825C5A7809F7}"
-	ProjectSection(SolutionItems) = preProject
-		ExternalLogin.md = ExternalLogin.md
-		doc\RedisStore.md = doc\RedisStore.md
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
