@@ -15,34 +15,6 @@ The change is we add `CODE` login sent to `Phone Number`.
 # Breaking Changing
 - RigoFunc.IdentityServer.DistributedStore had been deleted, and the distributed IPersistedGrandStore implementation had been merged into RigoFunc.IdentityServer.
 
+# How to use
 
-# Wiki
-https://github.com/xyting/RigoFunc.IdentityServer/wiki
-
-# OAuth Client
-https://github.com/xyting/RigoFunc.OAuth
-
-
-# Token Redis Store
-- ref https://github.com/kylesonaty/IdentityServer3.Contrib.Store.Redis
-
-## Usage
-```
-var builder = services.AddIdentityServer().AddRedisTransientStores(options=>{
-	options.config = "localhost";
-	options.db = 0;
-});
-```
-
-# External login
-[SEE:ExternalLogin.md](./doc/ExternalLogin.md)
-```sequence
-title:Title
-participant A
-participant B
-participant C
-
-```
-
-# Clients and Scopes
-[SEE](./src/RigoFunc.IdentityServer.Services.EntityFrameworkCore/README.md)
+See Host project
