@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.2.0-*",
   "description": "A plugin for IdentityServer v4 that uses ASP.NET Core Identity as its identity management library.",
   "authors": [ "rigofunc", "rigofunc@outlook.com", "lotosbin", "lotosbin@gmail.com" ],
   "packOptions": {
